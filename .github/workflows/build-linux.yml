@@ -5,6 +5,8 @@ on:
     inputs:
       tags:
         description: "Version tags"
+        required: true
+        type: string
 
 jobs:
   build:
@@ -25,3 +27,16 @@ jobs:
           name: yao-linux
           path: |
             /data/*
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: success()
+        continue-on-error: true
+        with:
+          tag_name: ${{ github.event.inputs.tags }}
+          name: Release ${{ github.event.inputs.tags }}
+          files: /data/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
